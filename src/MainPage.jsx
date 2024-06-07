@@ -1,7 +1,30 @@
-import waspLogo from './waspLogo.png'
-import './Main.css'
+import waspLogo from "./waspLogo.png";
+import "./Main.css";
 
 export const MainPage = () => {
+
+  // initialize a google auth client in popup mode.
+  // ref: https://developers.google.com/identity/oauth2/web/guides/use-code-model#popup-mode
+  const client = google.accounts.oauth2.initCodeClient({
+    client_id: "GOOGLE_CLIENT_ID_GOES_HERE",
+    scope: "https://www.googleapis.com/auth/photoslibrary.readonly",
+    ux_mode: "popup",
+    callback: (response) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", handleCallback, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      // Set custom header for CRSF
+      xhr.setRequestHeader("X-Requested-With", "XmlHttpRequest");
+      xhr.onload = function () {
+        console.log("Auth code response: " + xhr.responseText);
+      };
+      xhr.send("code=" + response.code);
+    },
+  });
+
+  console.log("is there even a client object:");
+  console.log(client);
+
   return (
     <div className="container">
       <main>
@@ -9,33 +32,16 @@ export const MainPage = () => {
           <img src={waspLogo} alt="wasp" />
         </div>
 
-        <h2 className="welcome-title">
-          Welcome to Wasp - you just started a new app!
-        </h2>
-        <h3 className="welcome-subtitle">
-          This is page <code>MainPage</code> located at route <code>/</code>.
-          Open <code>src/MainPage.jsx</code> to edit it.
-        </h3>
+        <h2 className="welcome-title">google photos...?</h2>
+        <h3 className="welcome-subtitle">can we get this to load at all?</h3>
 
         <div className="buttons">
-          <a
-            className="button button-filled"
-            href="https://wasp-lang.dev/docs/tutorial/create"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Take the Tutorial
-          </a>
-          <a
-            className="button button-outline"
-            href="https://discord.com/invite/rzdnErX"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Chat on Discord
-          </a>
+          <div className="button button-filled" onClick={client.requestCode}>
+            {/* <div className="button button-filled" > */}
+            Google Photos
+          </div>
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
