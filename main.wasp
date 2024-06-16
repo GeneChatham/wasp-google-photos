@@ -2,7 +2,26 @@ app waspGooglePhotos {
   wasp: {
     version: "^0.13.2"
   },
-  title: "wasp-google-photos"
+  title: "wasp-google-photos",
+  auth: {
+    // 1. Specify the User entity (we'll define it next)
+    userEntity: User,
+    methods: {
+      // 2. Enable Google Auth
+      google: {}
+    },
+    onAuthFailedRedirectTo: "/login"
+  },
+}
+
+entity User {=psl
+    id          Int     @id @default(autoincrement())
+    // ...
+psl=}
+
+route LoginRoute { path: "/login", to: LoginPage }
+page LoginPage {
+  component: import { Login } from "@src/pages/auth.tsx"
 }
 
 route RootRoute { path: "/", to: MainPage }
